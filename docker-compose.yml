@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: tsr
+      POSTGRES_PASSWORD: tsr
+      POSTGRES_DB: tsr
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "node -v && npm i && npm run start"
+    environment:
+      DATABASE_URL: postgres://tsr:tsr@db:5432/tsr
+      CORS_ORIGIN: "*"
+      PORT: 3000
+      API_KEY: ""   # si quieres proteger, pon un valor aquí o usa .env
+    volumes:
+      - ./:/app
+    ports: ["3000:3000"]
+    depends_on: [db]
+
+volumes:
+  pgdata:
